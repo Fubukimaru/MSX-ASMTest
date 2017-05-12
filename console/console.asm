@@ -30,12 +30,15 @@
 ---------------------------------------------------------
 INICIO:
 	call INIT_MODE_SC0	; iniciar el mode de pantalla
-	call IMPRI_MENSAJE	; imprimir el mensaje en pantalla
+	call P_INTRO		; imprimir el mensaje en pantalla
 
+
+LLOOP:
 	call GET_LINE		;
-
+	;call DO_SCROLL
+	jp LLOOP		; ToDo: introduce break
 FIN:
-	jp FIN; esto es como 100 goto 100
+	ret
 
 ---------------------------------------------------------
 ; INICIALIZA EL MODO DE PANTALLA
@@ -64,12 +67,32 @@ ret
 ;---------------------------------------------------------
 ; RUTINA QUE IMPRIME EL TEXTO EN PANTALLA
 ;---------------------------------------------------------
+P_INTRO:
+	ld hl,0101h
+	call POSIT
+	ld hl, texto
+	call IMPRI_MENSAJE
+	ret
+
+DO_SCROLL: 		;Basically we remove the first line.
+	ld hl,0101h 
+	call POSIT
+	ld hl, scrolltext
+	call IMPRI_MENSAJE
+	ret
+
+INIT_CURSOR:
+	ld hl,0118h	; Line 24, Position 1
+	call POSIT
+	ret
+	
+
 IMPRI_MENSAJE:
 	;ld h,01	; situamos la Columna
 	;ld l,01	; y la fila para
-	ld hl,0101h	; también podemos hacerlo de esta manera
-	call POSIT 	; fijar el cursor donde empezara a escribir
-	ld hl,texto	; ponemos hl apuntando al texto del mensaje
+	;ld hl,0101h	; también podemos hacerlo de esta manera
+	;call POSIT 	; fijar el cursor donde empezara a escribir
+	;ld hl,texto	; ponemos hl apuntando al texto del mensaje
 
  @@bucle:
 	ld a,[hl]	; cogemos el primer  carácter y lo metemos en a
@@ -79,15 +102,46 @@ IMPRI_MENSAJE:
 	inc hl		; incrementamos hl para que apunte a la siguiente letra
 	jr @@bucle	; si no hemos llegado al final continuamosescribiendo
 
+	ret
 ;---------------------------------------------------------
 texto:
-	.db "Hola Mundo"
+	db 27, "E"		;Borra pantalla
+	db 27, "Y", 5+32, 10+32	;Situa cursor en 5,10
+	db "Esto es un ejemplo"	;Text
+	db 27, "H"		;Situa cursor al principio
+	db 0			;Fin de cadena 
+
+
+scrolltext:
+	;db 27, 'L', 0	;Insert line in cursor
+	db 27, 'M', 0	;Delete line in cursor
 
 
 GET_LINE:
-	push af		;Save a value
-	call CHGET	;
-	
-	call CHPUT	;
+	push af			;Save a value
+	push bc
+	call CHGET		;Read char
 
+	LD b,a			;Copy into b
+
+	;-------Case ENTER	
+@@ENTER:
+	XOR	0Dh		; Check if it is an enter
+	JP NZ, @@TEXT
+	
+	call DO_SCROLL	
+	call INIT_CURSOR
+
+	JP @@END_GET_LINE	; Go to the final
+
+	
+
+	;-------Case Text
+@@TEXT: 
+	ld a,b
+	call CHPUT		;Write char
+	
+@@END_GET_LINE:
+	pop bc
 	pop af		;Restore a value
+	ret
