@@ -61,7 +61,24 @@ INIT_MODE_SC0:
 	; SCREEN 1 : texto de 32 x 24 con 16 colores 
 	; SCREEN 2 : gráficos de 256 x 192 con 16 colores 
 	; SCREEN 3 : gráficosde 64 x 48 con 16 colores 
-ret
+	ret
+
+
+PRINT_A:
+	IN A,[99h]
+	;XOR A
+	LD A,10
+	OUT [99h],A	;Byte Bajo dir
+	LD A, 64
+	OUT [99h],A	;Byte Alto dir
+			;VRAM direccion 0h		
+
+	LD A, 65 	;ASCII A mayus
+	OUT [98h],A
+	OUT [98h],A
+	OUT [98h],A
+	OUT [98h],A
+	RET
 
 ;---------------------------------------------------------
 ;---------------------------------------------------------
@@ -72,6 +89,7 @@ P_INTRO:
 	call POSIT
 	ld hl, texto
 	call IMPRI_MENSAJE
+	call PRINT_A
 	ret
 
 DO_SCROLL: 		;Basically we remove the first line.
