@@ -1,4 +1,3 @@
-;---------------------------------------------------------
 ; NOMBRE DE NUESTRO PROGRAMA
 ; HOLA MUNDO
 ;
@@ -16,6 +15,9 @@
 ; DIRECTIVAS PARA EL ENSAMBLADOR ( ASMSX )
 ;
 ---------------------------------------------------------
+
+ORG #8000 ; DEFINIR LA DIRECCIóN DEL CóDIGO IRá EN 8000H
+
 ;.BIOS: DEFINIR NOMBRES DE LAS LLAMADAS A LA BIOS
 INITXT EQU #050E
 POSIT EQU #00C6
@@ -28,11 +30,10 @@ db "AB" ;ROM header
 ;.START  INICIO 
 dw INICIO ; Code initial address
 
-.ZILOG ;STANDARD ZILOG CODE
+;.ZILOG ;STANDARD ZILOG CODE
 
 
 ;.PAGE 2
-ORG #8000 ; DEFINIR LA DIRECCIóN DEL CóDIGO IRá EN 8000H
 ;---------------------------------------------------------
 ; INICIO DEL PROGRAMA
 ;
