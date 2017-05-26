@@ -1,21 +1,18 @@
-;---------------------------------------------------------
+xzilog
+;y---------------------------------------------------------
 ; Nombre de nuestro programa
 ; Hola Mundo
-;
----------------------------------------------------------
+;---------------------------------------------------------
 ; DEFINIR CONTANTES
-;
----------------------------------------------------------
+;---------------------------------------------------------
 ; no definimos ninguna constante
 ;
 ; Variables de sistema
 	FORCLR equ 0F3E9h;
 ; Foreground colour
-;
----------------------------------------------------------
+;---------------------------------------------------------
 ; DIRECTIVAS PARA EL ENSAMBLADOR ( asMSX )
-;
----------------------------------------------------------
+;---------------------------------------------------------
 .bios  
 ; Definir Nombres de las llamadas a la BIOS
 .page 2        
@@ -26,26 +23,25 @@
 ; Inicio del Código de nuestro Programa
 ;---------------------------------------------------------
 ; INICIO DEL PROGRAMA
-;
----------------------------------------------------------
+;---------------------------------------------------------
 INICIO:
 	call INIT_MODE_SC0; iniciar el mode de pantalla
 	call IMPRI_MENSAJE; imprimir el mensaje en pantalla
 FIN:
 	jp FIN; esto es como 100 goto 100
 
----------------------------------------------------------
+;---------------------------------------------------------
 ; INICIALIZA EL MODO DE PANTALLA
----------------------------------------------------------
+;---------------------------------------------------------
 ; BASIC: COLOR 15,0,0
 ; Establecer el fondo de color Negro
 INIT_MODE_SC0:
 	ld hl, FORCLR
-	ld[hl],15	; Color del primer plano
+	ld(hl),15	; Color del primer plano
 	inc hl		; blanco
-	ld[hl],1	; Color de fondo
+	ld(hl),1	; Color de fondo
 	inc hl		; negro
-	ld[hl],1	; Color del borde
+	ld(hl),1	; Color del borde
 			; negro
 	call INITXT	; set SCREEN 0
 	;call INIT32	; set SCREEN 1
@@ -69,7 +65,7 @@ IMPRI_MENSAJE:
 	ld hl,texto	; ponemos hl apuntando al texto del mensaje
 
 bucle:
-	ld a,[hl]	; cogemos el primer  carácter y lo metemos en a
+	ld a,(hl)	; cogemos el primer  carácter y lo metemos en a
 	or a		; comprobamos si hemos llegado al final del texto
 	ret z		; y salimos de la rutina en el caso que el compare sea Zero
 	call CHPUT	; escribimos ese carácter en la posición del cursor

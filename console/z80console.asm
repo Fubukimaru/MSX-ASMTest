@@ -1,43 +1,37 @@
 ; NOMBRE DE NUESTRO PROGRAMA
 ; HOLA MUNDO
-;
----------------------------------------------------------
+;---------------------------------------------------------
 ; DEFINIR CONTANTES
-;
----------------------------------------------------------
+;---------------------------------------------------------
 ; NO DEFINIMOS NINGUNA CONSTANTE
 ;
 ; VARIABLES DE SISTEMA
-	FORCLR EQU #F3E9;
+FORCLR EQU #F3E9;
 ; FOREGROUND COLOUR
-;
----------------------------------------------------------
+;---------------------------------------------------------
 ; DIRECTIVAS PARA EL ENSAMBLADOR ( ASMSX )
-;
----------------------------------------------------------
+;---------------------------------------------------------
 
-ORG #8000 ; DEFINIR LA DIRECCIóN DEL CóDIGO IRá EN 8000H
 
-;.BIOS: DEFINIR NOMBRES DE LAS LLAMADAS A LA BIOS
+ORG #8000 ; DEFINIR LA DIRECCION DEL CODIGO IRA EN 8000H
+
+;.BIOS ;DEFINIR NOMBRES DE LAS LLAMADAS A LA BIOS
 INITXT EQU #050E
 POSIT EQU #00C6
 CHPUT EQU #00A2
 CHGET EQU #009F
 
-db "AB" ;ROM header
-
-
+DB "AB" ;ROM header
 ;.START  INICIO 
-dw INICIO ; Code initial address
+DW INICIO ; Code initial address
 
-;.ZILOG ;STANDARD ZILOG CODE
+;.ASDZILOG ;STANDARD ZILOG CODE
 
 
 ;.PAGE 2
 ;---------------------------------------------------------
 ; INICIO DEL PROGRAMA
-;
----------------------------------------------------------
+;---------------------------------------------------------
 INICIO:
 	CALL INIT_MODE_SC0	; INICIAR EL MODE DE PANTALLA
 	CALL P_INTRO		; IMPRIMIR EL MENSAJE EN PANTALLA
@@ -50,9 +44,9 @@ LLOOP:
 FIN:
 	RET
 
----------------------------------------------------------
+;---------------------------------------------------------
 ; INICIALIZA EL MODO DE PANTALLA
----------------------------------------------------------
+;---------------------------------------------------------
 ; BASIC: COLOR 15,0,0
 ; ESTABLECER EL FONDO DE COLOR NEGRO
 INIT_MODE_SC0:
@@ -116,13 +110,13 @@ INIT_CURSOR:
 	
 
 IMPRI_MENSAJE:
- @@BUCLE:
-	LD A,(HL)	; COGEMOS EL PRIMER  CARáCTER Y LO METEMOS EN A
+.BUCLE:
+	LD A,(HL)	; COGEMOS EL PRIMER  CARACTER Y LO METEMOS EN A
 	OR A		; COMPROBAMOS SI HEMOS LLEGADO AL FINAL DEL TEXTO
 	RET Z		; Y SALIMOS DE LA RUTINA EN EL CASO QUE EL COMPARE SEA ZERO
-	CALL CHPUT	; ESCRIBIMOS ESE CARáCTER EN LA POSICIóN DEL CURSOR
+	CALL CHPUT	; ESCRIBIMOS ESE CARACTER EN LA POSICION DEL CURSOR
 	INC HL		; INCREMENTAMOS HL PARA QUE APUNTE A LA SIGUIENTE LETRA
-	JR @@BUCLE	; SI NO HEMOS LLEGADO AL FINAL CONTINUAMOSESCRIBIENDO
+	JR .BUCLE	; SI NO HEMOS LLEGADO AL FINAL CONTINUAMOSESCRIBIENDO
 
 	RET
 ;---------------------------------------------------------
@@ -147,23 +141,23 @@ GET_LINE:
 	LD B,A			;COPY INTO B
 
 	;-------CASE ENTER	
-@@ENTER:
+.ENTER:
 	XOR	#0D		; CHECK IF IT IS AN ENTER
-	JP NZ, @@TEXT
+	JP NZ, .TEXT
 	
 	CALL DO_SCROLL	
 	CALL INIT_CURSOR
 
-	JP @@END_GET_LINE	; GO TO THE FINAL
+	JP .END_GET_LINE	; GO TO THE FINAL
 
 	
 
 	;-------CASE TEXT
-@@TEXT: 
+.TEXT: 
 	LD A,B
 	CALL CHPUT		;WRITE CHAR
 	
-@@END_GET_LINE:
+.END_GET_LINE:
 	POP BC
 	POP AF		;RESTORE A VALUE
 	RET
