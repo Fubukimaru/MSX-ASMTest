@@ -1,4 +1,5 @@
 ;HEADER
+	ORG #8000
 	DB "AB" ;ROM header
 	DW INICIO ; Code initial address
 
