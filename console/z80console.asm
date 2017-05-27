@@ -1,54 +1,40 @@
-; NOMBRE DE NUESTRO PROGRAMA
-; HOLA MUNDO
-;---------------------------------------------------------
-; DEFINIR CONTANTES
-;---------------------------------------------------------
-; NO DEFINIMOS NINGUNA CONSTANTE
-;
-; VARIABLES DE SISTEMA
-FORCLR EQU #F3E9;
-; FOREGROUND COLOUR
-;---------------------------------------------------------
-; DIRECTIVAS PARA EL ENSAMBLADOR ( ASMSX )
-;---------------------------------------------------------
+;SIZE OF ROM
+	SIZE 8
+
+	ORG		#8000 ; Code will be at position #8000 (Page 2)
+;HEADER
+	DB	"AB" ;ROM header
+	DW	INICIO ; Code initial address
+	DEFS	12
 
 
-ORG #8000 ; DEFINIR LA DIRECCION DEL CODIGO IRA EN 8000H
+	
+; Constants
+FORCLR EQU #F3E9 ; FOREGROUND COLOUR
 
-;.BIOS ;DEFINIR NOMBRES DE LAS LLAMADAS A LA BIOS
-INITXT EQU #050E
-POSIT EQU #00C6
-CHPUT EQU #00A2
-CHGET EQU #009F
-
-DB "AB" ;ROM header
-;.START  INICIO 
-DW INICIO ; Code initial address
-
-;.ASDZILOG ;STANDARD ZILOG CODE
+;BIOS routine addresses
+INITXT 	EQU #006C
+POSIT	EQU #00C6
+CHPUT	EQU #00A2
+CHGET	EQU #009F
 
 
-;.PAGE 2
-;---------------------------------------------------------
-; INICIO DEL PROGRAMA
 ;---------------------------------------------------------
 INICIO:
 	CALL INIT_MODE_SC0	; INICIAR EL MODE DE PANTALLA
 	CALL P_INTRO		; IMPRIMIR EL MENSAJE EN PANTALLA
 
 
-LLOOP:
+.LLOOP:
 	CALL GET_LINE		;
-	;CALL DO_SCROLL
-	JP LLOOP		; TODO: INTRODUCE BREAK
-FIN:
+	JP .LLOOP		; TODO: INTRODUCE BREAK
+.FIN:
 	RET
 
 ;---------------------------------------------------------
-; INICIALIZA EL MODO DE PANTALLA
+; Init screen
 ;---------------------------------------------------------
 ; BASIC: COLOR 15,0,0
-; ESTABLECER EL FONDO DE COLOR NEGRO
 INIT_MODE_SC0:
 	LD HL, FORCLR
 	LD (HL),15	; COLOR DEL PRIMER PLANO
@@ -56,20 +42,13 @@ INIT_MODE_SC0:
 	LD (HL),1	; COLOR DE FONDO
 	INC HL		; NEGRO
 	LD (HL),1	; COLOR DEL BORDE
-			; NEGRO
+				; NEGRO
 	CALL INITXT	; SET SCREEN 0
-	;CALL INIT32	; SET SCREEN 1
-	;CALL INIGRP	; SET SCREEN 2
-	;CALL INIMLT	; SET SCREEN 3
-	; SCREEN 0 : TEXTO DE 40 X 24 CON 2 COLORES 
-	; SCREEN 1 : TEXTO DE 32 X 24 CON 16 COLORES 
-	; SCREEN 2 : GRáFICOS DE 256 X 192 CON 16 COLORES 
-	; SCREEN 3 : GRáFICOSDE 64 X 48 CON 16 COLORES 
 	RET
 
 
 PRINT_A:
-	IN A,(#99)
+	;IN A,(#99) ; The interruption does this.
 	;XOR A
 	LD A,10
 	OUT (#99),A	;BYTE BAJO DIR
@@ -161,3 +140,4 @@ GET_LINE:
 	POP BC
 	POP AF		;RESTORE A VALUE
 	RET
+
