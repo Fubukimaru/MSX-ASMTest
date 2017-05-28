@@ -1,7 +1,13 @@
 ;SIZE OF ROM
-	SIZE 8
+	SIZE 32
 
-	ORG		#8000 ; Code will be at position #8000 (Page 2)
+;Vars
+		ORG		#E000
+BUFF:	DS	256	; 256 Bytes, intialized with 0 by default
+BUFF_I:	DW 	0	;
+
+
+ORG		#8000 ; Code will be at position #8000 (Page 2)
 ;HEADER
 	DB	"AB" ;ROM header
 	DW	INICIO ; Code initial address
@@ -17,7 +23,6 @@ INITXT 	EQU #006C
 POSIT	EQU #00C6
 CHPUT	EQU #00A2
 CHGET	EQU #009F
-
 
 ;---------------------------------------------------------
 INICIO:
@@ -86,7 +91,8 @@ INIT_CURSOR:
 	LD HL, #0118	; LINE 24, POSITION 1
 	CALL POSIT
 	RET
-	
+
+
 
 IMPRI_MENSAJE:
 .BUCLE:
@@ -134,6 +140,7 @@ GET_LINE:
 	;-------CASE TEXT
 .TEXT: 
 	LD A,B
+	CALL STORE_BYTE ;STORING INPUT
 	CALL CHPUT		;WRITE CHAR
 	
 .END_GET_LINE:
@@ -141,3 +148,24 @@ GET_LINE:
 	POP AF		;RESTORE A VALUE
 	RET
 
+
+
+
+STORE_BYTE:
+	;Input: A, byte to store
+	PUSH	BC
+	PUSH	HL
+	LD BC, (BUFF_I)
+	LD HL, BUFF
+	ADD HL, BC
+	
+	LD (HL), A
+	INC HL
+	LD (HL), 61
+	INC HL
+	LD (HL), 62
+	;INC (BUFF_I) ; Increment the pointer
+	
+	POP	HL
+	POP	BC	
+	ret
