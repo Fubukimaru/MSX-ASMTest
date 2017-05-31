@@ -4,9 +4,12 @@
 ;Vars
 	ORG		#E000
 	
-QUEUE:	DS	256	; 256 Bytes, intialized with 0 by default
-Q_FIRST:DW	QUEUE	; Initial address of the queue
-Q_LAST:	DW	QUEUE	; Last add of queue
+QUEUE:	
+	DS	256	; 256 Bytes, intialized with 0 by default
+Q_FIRST: 
+	DW	QUEUE	; Initial address of the queue
+Q_LAST:	
+	DW	QUEUE	; Last add of queue
 
 
 ORG		#8000 ; Code will be at position #8000 (Page 2)
@@ -29,17 +32,13 @@ CHGET	EQU #009F
 INICIO:
 	CALL INIT_MODE_SC0	; INICIAR EL MODE DE PANTALLA
 
-	
-
 	CALL TEST_QUEUE
 
-	
 
-
-
-.LLOOP:
-	JP .LLOOP		; TODO: INTRODUCE BREAK
-.FIN:
+@@LLOOP:
+	XOR A
+	JP @@LLOOP		; TODO: INTRODUCE BREAK
+@@FIN:
 	RET
 
 ;---------------------------------------------------------
@@ -57,39 +56,10 @@ INIT_MODE_SC0:
 	RET
 
 
-PRINT_A:
-	;IN A,(#99) ; The interruption does this.
-	;XOR A
-	LD A,10
-	OUT (#99),A	;BYTE BAJO DIR
-	LD A, 64
-	OUT (#99),A	;BYTE ALTO DIR
-			;VRAM DIRECCION 0H		
-
-	LD A, 65 	;ASCII A MAYUS
-	OUT (#98),A
-	RET
-
 INIT_CURSOR:
 	LD HL, #0118	; LINE 24, POSITION 1
 	CALL POSIT
 	RET
-
-
-
-IMPRI_MENSAJE:
-.BUCLE:
-	LD A,(HL)	; COGEMOS EL PRIMER  CARACTER Y LO METEMOS EN A
-	OR A		; COMPROBAMOS SI HEMOS LLEGADO AL FINAL DEL TEXTO
-	RET Z		; Y SALIMOS DE LA RUTINA EN EL CASO QUE EL COMPARE SEA ZERO
-	CALL CHPUT	; ESCRIBIMOS ESE CARACTER EN LA POSICION DEL CURSOR
-	INC HL		; INCREMENTAMOS HL PARA QUE APUNTE A LA SIGUIENTE LETRA
-	JR .BUCLE	; SI NO HEMOS LLEGADO AL FINAL CONTINUAMOSESCRIBIENDO
-
-	RET
-
-
-
 
 
 
@@ -149,3 +119,24 @@ TEST_QUEUE:
 
 	RET
 	
+
+
+
+; JAMQUE COSAS
+JOC:
+        nop
+        di
+        .search
+        ld      SP,PILA
+        .SELECT 1 AT 06000h
+        .SELECT 17 AT 08000h
+        .SELECT 18 AT 0A000h
+
+
+   .page   3       ; RAM DADES
+        ;.ORG   0E000h ; Si es para 8ks, no empieza en $
+____PAGE_3_RAM:
+PILA0:
+        ds      256
+PILA:   .byte
+
