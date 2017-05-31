@@ -30,15 +30,9 @@ INICIO:
 	CALL INIT_MODE_SC0	; INICIAR EL MODE DE PANTALLA
 
 	
-	CALL INIT_MEMORY	;
-	
-	
-	CALL QUEUE		;
-	CALL QUEUE		;
-	CALL QUEUE		;
 
-	CALL DEQUEUE
-	CALL PRINT
+	CALL TEST_QUEUE
+
 	
 
 
@@ -104,21 +98,54 @@ IMPRI_MENSAJE:
 ;---------------------
 
 
-QUEUE:
+ENQUEUE:
+	PUSH HL			;Save state
+
 	;Input: A, byte to store
-	PUSH	BC
-	PUSH	HL
-	LD BC, (BUFF_I)
-	LD HL, BUFF
-	ADD HL, BC
+	LD HL, (Q_LAST)		;Get the pointer to the last
+
+	;ToDO: Check queue size (overflow)
 	
-	LD (HL), A
-	INC HL
-	LD (HL), 61
-	INC HL
-	LD (HL), 62
-	;INC (BUFF_I) ; Increment the pointer
+	LD (HL), A		;Store data
 	
-	POP	HL
-	POP	BC	
+	INC HL			;Increase pointer
+	LD (Q_LAST), HL
+	
+	POP HL			;Restoring state
 	ret
+
+
+DEQUEUE:
+	PUSH HL			;Save state
+	
+	LD HL, (Q_FIRST) 	;Get pointer to data
+	;ToDo: Check if there is data. (Q_FIRST != Q_LAST)
+
+	LD A, (HL)		;Load what is in memory
+	
+	INC HL			;Increase pointer
+	LD (Q_FIRST), HL
+
+	POP HL
+	RET			;Data is in A
+	
+
+TEST_QUEUE:
+	LD A, 'H'
+	CALL ENQUEUE
+	LD A, 'O'
+	CALL ENQUEUE
+	LD A, 'L'
+	CALL ENQUEUE
+	LD A, 'A'
+	CALL ENQUEUE
+
+	CALL DEQUEUE
+	CALL CHPUT
+	CALL DEQUEUE
+	CALL CHPUT
+	CALL DEQUEUE
+	CALL CHPUT
+
+	RET
+	
