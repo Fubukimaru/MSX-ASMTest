@@ -1,68 +1,3 @@
-;SIZE OF ROM
-	SIZE 32
-
-;Vars
-	ORG		#E000
-	
-QUEUE:	
-	DS	256	; 256 Bytes, intialized with 0 by default
-Q_FIRST: 
-	DW	QUEUE	; Initial address of the queue
-Q_LAST:	
-	DW	QUEUE	; Last add of queue
-
-
-ORG		#8000 ; Code will be at position #8000 (Page 2)
-;HEADER
-	DB	"AB" ;ROM header
-	DW	INICIO ; Code initial address
-	DEFS	12
-
-	
-; Constants
-FORCLR EQU #F3E9 ; FOREGROUND COLOUR
-
-;BIOS routine addresses
-INITXT 	EQU #006C
-POSIT	EQU #00C6
-CHPUT	EQU #00A2
-CHGET	EQU #009F
-
-;---------------------------------------------------------
-INICIO:
-	CALL INIT_MODE_SC0	; INICIAR EL MODE DE PANTALLA
-
-	CALL TEST_QUEUE
-
-
-@@LLOOP:
-	XOR A
-	JP @@LLOOP		; TODO: INTRODUCE BREAK
-@@FIN:
-	RET
-
-;---------------------------------------------------------
-; Init screen
-;---------------------------------------------------------
-INIT_MODE_SC0:
-	LD HL, FORCLR
-	LD (HL),15	; COLOR DEL PRIMER PLANO
-	INC HL		; BLANCO
-	LD (HL),1	; COLOR DE FONDO
-	INC HL		; NEGRO
-	LD (HL),1	; COLOR DEL BORDE
-				; NEGRO
-	CALL INITXT	; SET SCREEN 0
-	RET
-
-
-INIT_CURSOR:
-	LD HL, #0118	; LINE 24, POSITION 1
-	CALL POSIT
-	RET
-
-
-
 ;---------------------
 ;	QUEUE
 ;---------------------
@@ -116,27 +51,12 @@ TEST_QUEUE:
 	CALL CHPUT
 	CALL DEQUEUE
 	CALL CHPUT
+	CALL DEQUEUE
+	CALL CHPUT
 
 	RET
 	
 
 
 
-; JAMQUE COSAS
-JOC:
-        nop
-        di
-        .search
-        ld      SP,PILA
-        .SELECT 1 AT 06000h
-        .SELECT 17 AT 08000h
-        .SELECT 18 AT 0A000h
-
-
-   .page   3       ; RAM DADES
-        ;.ORG   0E000h ; Si es para 8ks, no empieza en $
-____PAGE_3_RAM:
-PILA0:
-        ds      256
-PILA:   .byte
-
+;.include "RAM.asm"
