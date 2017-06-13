@@ -2,7 +2,7 @@ all: queue.rom
 
 queue.rom: main.z80
 	cp main.z80 queue.rom
-main.z80:
+main.z80: *.asm
 	asmsx -z main.asm
 	rm *tmppre.*
 clean:

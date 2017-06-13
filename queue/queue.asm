@@ -2,6 +2,13 @@
 ;	QUEUE
 ;---------------------
 
+INIT_Q:
+	PUSH HL
+	LD HL, QUEUE
+	LD (Q_FIRST), HL
+	LD (Q_LAST), HL
+	POP HL
+	ret
 
 ENQUEUE:
 	PUSH HL			;Save state
@@ -36,6 +43,10 @@ DEQUEUE:
 	
 
 TEST_QUEUE:
+	CALL INIT_Q
+	LD A, 't'
+	CALL CHPUT
+
 	LD A, 'H'
 	CALL ENQUEUE
 	LD A, 'O'
@@ -52,6 +63,10 @@ TEST_QUEUE:
 	CALL DEQUEUE
 	CALL CHPUT
 	CALL DEQUEUE
+	CALL CHPUT
+
+
+	LD A, 'f'
 	CALL CHPUT
 
 	RET
