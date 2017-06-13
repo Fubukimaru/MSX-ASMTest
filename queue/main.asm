@@ -18,7 +18,7 @@ CHPUT	EQU #00A2
 CHGET	EQU #009F	
 
 ;LIBS
-	INCLUDE "lib/queue.asm"
+	INCLUDE "queue.asm"
 
 ;---------------------------------------------------------
 INICIO:
@@ -70,4 +70,4 @@ INIT_CURSOR:
 
 	
 	
-	INCLUDE "lib/RAM.asm"	
+	INCLUDE "RAM.asm"	
