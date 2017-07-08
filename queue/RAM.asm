@@ -1,5 +1,6 @@
 ;RAM VARS
 	ORG		#C000	;page 2
+
 	
 QUEUE:	
 	DS	256	; 256 Bytes, intialized with 0 by default
